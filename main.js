@@ -4,6 +4,9 @@ const axios = require('axios')
 const { login } = require('./config/secret.js')
 const fs = require('fs');       //引入文件读取模块
 const https = require('https')
+const RandomNeko = require('./plugins/random-neko.js')
+const RandomInu = require('./plugins/random-inu.js')
+
 /**
 * 服务端设置(*)
 * host: mirai-api-http 的地址和端口，默认是 http://127.0.0.1:8080
@@ -38,10 +41,7 @@ bot.onMessage(async message => {
     if (chain.type === 'Plain') {
       msg += Plain.value(chain); 
     }       // 从 messageChain 中提取文字内容
-  });
-  if(msg.includes('你好')) {
-    reply('你好，阿云')
-  }
+  })
   if(msg.includes('臭吼姆')) {
     reply('你才臭，你比野兽还臭')
   }
@@ -51,31 +51,34 @@ bot.onMessage(async message => {
   if(msg.includes('喊一下我')) {
     quoteReply([At(sender.id),Plain('好啦')])
   }
-  if(msg.includes('猫猫')) {
-    let neko = (url, name) => {
-      https.get(url, (res)=> {
-        let imgData = ''
-        res.setEncoding('binary')
-        res.on('data', chunk => {
-          imgData += chunk
-        })
-        res.on('end', () => {
-          fs.writeFile(`./download/${name}.jpg`, imgData, 'binary', err => {
-            if(err) {
-              console.log('下载失败')
-            } else{
-              bot.sendImageMessage(`./download/${name}.jpg`, message)
-            }
-          })
-        })
-      })
-    }
-    axios.get('https://api.thecatapi.com/v1/images/search').then(res => {
-      console.log(res.data[0].url)
-      neko(res.data[0].url, res.data[0].id)
-    })
-  }
+  // if(msg.includes('猫猫')) {
+  //   let neko = (url, name) => {
+  //     https.get(url, (res)=> {
+  //       let imgData = ''
+  //       res.setEncoding('binary')
+  //       res.on('data', chunk => {
+  //         imgData += chunk
+  //       })
+  //       res.on('end', () => {
+  //         fs.writeFile(`./download/${name}.jpg`, imgData, 'binary', err => {
+  //           if(err) {
+  //             console.log('下载失败')
+  //           } else{
+  //             bot.sendImageMessage(`./download/${name}.jpg`, message)
+  //           }
+  //         })
+  //       })
+  //     })
+  //   }
+  //   axios.get('https://api.thecatapi.com/v1/images/search').then(res => {
+  //     console.log(res.data[0].url)
+  //     neko(res.data[0].url, res.data[0].id)
+  //   })
+  // }
 })
+
+bot.use(RandomNeko())
+bot.use(RandomInu())
 
 bot.listen('all');
 
