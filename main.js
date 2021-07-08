@@ -6,6 +6,8 @@ const fs = require('fs');       //引入文件读取模块
 const https = require('https')
 const RandomNeko = require('./plugins/random-neko.js')
 const RandomInu = require('./plugins/random-inu.js')
+const SabaruShock = require('./plugins/sabaru-shock.js')
+
 
 /**
 * 服务端设置(*)
@@ -48,37 +50,11 @@ bot.onMessage(async message => {
   if(msg.includes('臭阿云')) {
     reply('对对，阿云最臭了')
   }
-  if(msg.includes('喊一下我')) {
-    quoteReply([At(sender.id),Plain('好啦')])
-  }
-  // if(msg.includes('猫猫')) {
-  //   let neko = (url, name) => {
-  //     https.get(url, (res)=> {
-  //       let imgData = ''
-  //       res.setEncoding('binary')
-  //       res.on('data', chunk => {
-  //         imgData += chunk
-  //       })
-  //       res.on('end', () => {
-  //         fs.writeFile(`./download/${name}.jpg`, imgData, 'binary', err => {
-  //           if(err) {
-  //             console.log('下载失败')
-  //           } else{
-  //             bot.sendImageMessage(`./download/${name}.jpg`, message)
-  //           }
-  //         })
-  //       })
-  //     })
-  //   }
-  //   axios.get('https://api.thecatapi.com/v1/images/search').then(res => {
-  //     console.log(res.data[0].url)
-  //     neko(res.data[0].url, res.data[0].id)
-  //   })
-  // }
 })
 
 bot.use(RandomNeko())
 bot.use(RandomInu())
+bot.use(SabaruShock())
 
 bot.listen('all');
 

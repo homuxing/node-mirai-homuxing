@@ -1,6 +1,6 @@
 const { createCanvas, loadImage } = require('canvas')
-const fs = require('fs')
-const canvas = createCanvas(1024, 1024)
+const Mirai = require('node-mirai-sdk')
+const { Plain } = Mirai.MessageComponent
 
 function formatTime(now) {
   let str = ''
@@ -15,33 +15,84 @@ function formatTime(now) {
   return str
 }
 
-async function render() {
-  let now = new Date() 
-  await loadImage('./images/src_hq.png').then((image) => {
-    // let str = formatTime(now)
-    let str = '该下班了'
+async function render(str) {
+  const canvas = createCanvas(1024, 1024)
+  let image =  await loadImage(process.cwd() + '/assets/sabaru.png')
 
-    const ctx = canvas.getContext('2d')
-    ctx.fillStyle = '#fff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(image, 0, 0)
-    // 字数范围：4 - 9
-    // 268 是指从第一个字的开始到最后一个字结束的位置
-    //       啊 啊 啊 啊 啊 啊
-    //     ->      268       <-
-    let baseLength = str.length - 4
-    let startX = 890 - (96 - (44 * (baseLength / 5))) / 2
-    let startY = 32
-    let addY = (536 - (10 - baseLength * 4)) / (str.length - 1)
-    ctx.font = 96 - (44 * baseLength / 5) + 'px SimHei, STHeiti'
-    ctx.fillStyle = '#000'
-    ctx.textBaseline = 'top'
-    for(let i = 0; i < str.length; i++) {
-      ctx.fillText(str[i], startX, startY + addY * i)
-    }
-  })
+  const ctx = canvas.getContext('2d')
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.drawImage(image, 0, 0)
+  // 字数范围：4 - 9
+  // 268 是指从第一个字的开始到最后一个字结束的位置
+  //       啊 啊 啊 啊 啊 啊
+  //     ->      268       <-
+  let baseLength = str.length - 4
+  let startX = 890 - (96 - (44 * (baseLength / 5))) / 2
+  let startY = 32
+  let addY = (536 - (10 - baseLength * 4)) / (str.length - 1)
+  ctx.font = 96 - (44 * baseLength / 5) + 'px SimHei, STHeiti'
+  ctx.fillStyle = '#000'
+  ctx.textBaseline = 'top'
+  for(let i = 0; i < str.length; i++) {
+    ctx.fillText(str[i], startX, startY + addY * i)
+  }
+
+
   const buffer = canvas.toBuffer('image/png')
-  fs.writeFileSync(`./data/sabaru-${now.getTime()}.png`, buffer)
-  setTimeout(render, 60000)
+  return buffer
+
 }
-render()
+
+function getCommandParam(command, commandHead) {
+  if(command.trim().startsWith(commandHead + ' ')) {
+    let trimCommand = command.trim()
+    let parmaStartIndex = trimCommand.indexOf(' ') + 1
+    let parma = trimCommand.substr(parmaStartIndex)
+    return parma
+  } else {
+    return false
+  }
+}
+
+const SabaruShock = () => {
+  const callback = async (message, bot) => {
+    let { messageChain, reply, quoteReply } = message
+    let msg = ''
+    let shock = ''
+    let sendBuffer
+    messageChain.forEach(chain => {
+      if(chain.type == 'Plain') {
+        msg += Plain.value(chain)
+      }
+    })
+    shock = getCommandParam(msg, '薮猫')
+    if(shock.length > 8) {
+      quoteReply('这也太长了，薮猫说不出来', message)
+      reply('(最多八个字哦)')
+      return false
+    }
+    if(shock && shock == '报时') {
+      // 报时
+      sendBuffer = await render(formatTime(new Date()))
+      let replyMessage = await bot.sendImageMessage(sendBuffer, message)
+      if(!replyMessage.messageId) {
+        console.error('[SabaruShock] REPLY ERROR')
+      }
+    } else if(shock) {
+      // 震惊
+      sendBuffer = await render(shock)
+      let replyMessage = await bot.sendImageMessage(sendBuffer, message)
+      if(!replyMessage.messageId) {
+        console.error('[SabaruShock] REPLY ERROR')
+      }
+    }
+  }
+  return {
+    name: 'SabaruShock',
+    subscribe: 'message',
+    callback
+  }
+}
+
+module.exports = SabaruShock
