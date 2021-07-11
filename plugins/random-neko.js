@@ -16,12 +16,12 @@ const RandomNeko = () => {
       const api = 'https://api.thecatapi.com/v1/images/search'
       // axios.get(api).then()
       const res = await axios.get(api)
-      console.log(res.data[0].url)
       const nekoImage = await getImageBuffer(res.data[0].url)
       const replyMsg = await bot.sendImageMessage(nekoImage, message)
-      console.log(replyMsg)
       if(!replyMsg.messageId) {
         console.log('[RandomNeko] REPLY ERROR')
+      } else {
+        console.log('[RandomNeko]' + ' ' + res.data[0].url)
       }
     }
   }

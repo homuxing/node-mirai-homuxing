@@ -7,6 +7,7 @@ const https = require('https')
 const RandomNeko = require('./plugins/random-neko.js')
 const RandomInu = require('./plugins/random-inu.js')
 const SabaruShock = require('./plugins/sabaru-shock.js')
+// const SabaruOhayo = require('./plugins/sabaru-ohayo')
 
 
 /**
@@ -55,6 +56,7 @@ bot.onMessage(async message => {
 bot.use(RandomNeko())
 bot.use(RandomInu())
 bot.use(SabaruShock())
+// bot.use(SabaruOhayo())
 
 bot.listen('all');
 

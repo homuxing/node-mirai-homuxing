@@ -15,13 +15,13 @@ const RandomInu = () => {
       const api = 'https://dog.ceo/api/breeds/image/random'
       // axios.get(api).then()
       const res = await axios.get(api)
-      console.log(res.data.message)
       if(res.data.status === 'success') {
         const InuImage = await getImageBuffer(res.data.message)
         const replyMsg = await bot.sendImageMessage(InuImage, message)
-        console.log(replyMsg)
         if(!replyMsg.messageId) {
           console.log('[RandomInu] REPLY ERROR')
+        } else {
+          console.log('[RandomInu]' + ' ' + res.data.message)
         }
       } else {
         console.log('[RandomInu] GET IMAGE ERROR')
