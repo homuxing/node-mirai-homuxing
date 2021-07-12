@@ -12,8 +12,8 @@ const getImageBuffer =(url) => {
         buffer = Buffer.from(imgData, 'binary')
         resolve(buffer)
       })
-    }).on('error', () => {
-      reject()
+    }).on('error', (err) => {
+      reject(err)
     })
   })
 }

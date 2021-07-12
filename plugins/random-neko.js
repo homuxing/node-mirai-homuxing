@@ -1,5 +1,6 @@
 const axios = require('axios')
 const Mirai = require('node-mirai-sdk')
+const {nekoApiKey} = require('../config/secret.js')
 const {Plain, Image} = Mirai.MessageComponent
 const getImageBuffer = require('../util/getImageBuffer')
 
@@ -14,8 +15,7 @@ const RandomNeko = () => {
     })
     if(msg.trim() == '猫猫') {
       const api = 'https://api.thecatapi.com/v1/images/search'
-      // axios.get(api).then()
-      const res = await axios.get(api)
+      const res = await axios.get(api,{headers: {'x-api-key': nekoApiKey})
       const nekoImage = await getImageBuffer(res.data[0].url)
       const replyMsg = await bot.sendImageMessage(nekoImage, message)
       if(!replyMsg.messageId) {
