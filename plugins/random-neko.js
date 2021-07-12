@@ -15,7 +15,7 @@ const RandomNeko = () => {
     })
     if(msg.trim() == '猫猫') {
       const api = 'https://api.thecatapi.com/v1/images/search'
-      const res = await axios.get(api,{headers: {'x-api-key': nekoApiKey})
+      const res = await axios.get(api,{headers: {'x-api-key': nekoApiKey}})
       const nekoImage = await getImageBuffer(res.data[0].url)
       const replyMsg = await bot.sendImageMessage(nekoImage, message)
       if(!replyMsg.messageId) {
